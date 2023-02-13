@@ -4,68 +4,52 @@ const ordered_List = document.getElementById("ordered_List");
 const nextBtn = document.getElementById("load_next");
 const load_prev = document.getElementById("load_prev");
 
-let API_URL = `https://api.github.com/repositories/1296269/issues?page=$%7B1%7D&`;
+let API_URL = `https://api.github.com/repositories/1296269/issues?page=`;
+let per_page = 5;
 let pageCount = 1;
 
-window.addEventListener("load", apiData)
+window.addEventListener("load", () => {
+    apiData(pageCount);
+});
 
 nextBtn.addEventListener("click", () => {
-    pageCount += 1
-    apiData(pageCount)
-
+    pageCount++;
+    apiData(pageCount);
 });
-
 
 load_prev.addEventListener("click", () => {
-    if (pageCount == 1) {
-        return
+    if (pageCount <= 1) {
+        return;
     } else {
-        pageCount -= 1
-        apiData(pageCount)
+        pageCount--;
+        apiData(pageCount);
     }
-
 });
 
+function apiData(pageNum) {
+    fetch(`${API_URL}${pageNum}&per_page=${per_page}`)
+        .then((res) => {
+            return res.json();
+        })
+        .then((data) => {
+            ordered_List.innerHTML = `
+        <li>TITLE : ${data[0].title}</li>
+        <li>TITLE : ${data[1].title}</li>
+        <li>TITLE : ${data[2].title}</li>
+        <li>TITLE : ${data[3].title}</li>
+        <li>TITLE : ${data[4].title}</li>
+      `;
+            page_number_heading.innerHTML = `Page Number: ${pageCount}`;
 
-function apiData() {
-
-    fetch(`${API_URL}${per_page = pageCount}`).then(res => {
-        return res.json();
-    }).then(data => {
-
-        ordered_List.innerHTML = `
-        <li>URL: ${data[pageCount].url}</li>
-        <li>Repository URL: ${data[pageCount].repository_url}</li>
-        <li>Labels URL: ${data[pageCount].labels_url}</li>
-        <li>Comments URL: ${data[pageCount].comments_url}</li>
-        <li>Events URL: ${data[pageCount].events_url}</li>
-        <li>HTML URL: ${data[pageCount].html_url}</li>
-        <li>ID: ${data[pageCount].id}</li>
-        <li>Node Id: ${data[pageCount].node_id}</li>
-        <li>Number: ${data[pageCount].number}</li>
-        <li>Title: ${data[pageCount].title}</li>
-        <li>Body: ${data[pageCount].body}</li>
-        <li>Avatar URL: ${data[pageCount].user.avatar_url}</li>
-        <li>Type: ${data[pageCount].user.type}</li>
-        <li>Admin: ${data[pageCount].user.ite_admin}</li>
-        <li>Milestone: ${data[pageCount].milestone}</li>
-        <li>Comments: ${data[pageCount].comments}</li>
-        <li>Author association: ${data[pageCount].author_association}</li>
-        <li>Draft: ${data[pageCount].draft}</li>
-        <li>Timeline URL: ${data[pageCount].timeline_url}</li>
-        `
-        if (pageCount <= 1) {
-            load_prev.style.display = "none";
-            page_number_heading.innerHTML = `Page Number : ${pageCount}`
-
-        } else {
-            load_prev.style.display = "inline";
-            page_number_heading.innerHTML = `Page Number : ${pageCount}`
-        }
-
-    }).catch(e => {
-        console.log(e)
-    })
-
-
+            if (pageCount <= 1) {
+                load_prev.style.display = "none";
+            } else {
+                load_prev.style.display = "inline";
+            }
+        })
+        .catch((e) => {
+            console.log(e);
+        });
 }
+
+
